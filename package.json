@@ -1,0 +1,22 @@
+{
+  "name": "@uloncl/db-manager",
+  "version": "0.0.2",
+  "author": "lewis Mann <lmann.8602@gmail.com>",
+  "description": "db manager for a team project by some uni students for use within some browser extensions that were making for said project, cba making this private",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev3-extensions/db-manager.git"
+  },
+  "keywords": [
+    "database"
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dev3-extensions/db-manager/issues"
+  },
+  "homepage": "https://github.com/dev3-extensions/db-manager#readme"
+}

@@ -1,0 +1,1 @@
+this package is meant to serve as a utility to access local (sqlitejs, mongodbjs), browser embedded (indexed DB), and remote databases
