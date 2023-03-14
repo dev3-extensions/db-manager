@@ -1,6 +1,6 @@
 {
   "name": "@uloncl/db-manager",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "author": "lewis Mann <lmann.8602@gmail.com>",
   "description": "db manager for a team project by some uni students for use within some browser extensions that were making for said project, cba making this private",
   "main": "index.js",
