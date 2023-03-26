@@ -1,9 +1,9 @@
 {
   "name": "@uloncl/db-manager",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "lewis Mann <lmann.8602@gmail.com>",
   "description": "db manager for a team project by some uni students for use within some browser extensions that were making for said project, cba making this private",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
