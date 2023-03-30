@@ -1,16 +1,11 @@
 import { Column } from "./column"
 
-export class Table {
+export interface Table {
     name: string
     columns: Array<Column>
-
-    constructor (name: string, columns: JSON) {
-        this.name = name
-        for(const name in columns) {
-            const mods = columns[name]
-            this.columns.push(
-                new Column(name, mods)
-            )
-        }
-    }
+    add(data:JSON) : void
+    get(id:number) : JSON
+    getAll(query? : string, count? : number) : JSON
+    update(id:number, data:JSON) : void
+    delete(id:number) : void
 }
