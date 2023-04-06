@@ -1,8 +1,8 @@
-import { Column } from "./column"
+import { IColumn } from "./column"
 
-export interface Table {
+export interface ITable {
     name: string
-    columns: Array<Column>
+    columns: Array<IColumn>
     add(data:JSON) : void
     get(id:number) : JSON
     getAll(query? : string, count? : number) : JSON

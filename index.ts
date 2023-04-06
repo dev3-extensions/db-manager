@@ -1,34 +1,42 @@
-import type { Database } from "./structures/database";
+import type { IDatabase } from "./structures/interfaces/database";
 import { EmbeddedDB } from "./engines/IndexedDB/indexedDB";
-
-var schemas : { [key : string] : { [key : string] : any } }
-
-async function loadSchemas(): Promise<any> {
-    const response = await fetch('../../../schemas.json');
-    const data = await response.json();
-    return data;
-}
-
-loadSchemas().then((data) => {
-    console.log(data);
-    schemas = data.parse
-});
+import { TSource } from "./structures/types/source";
+import { TSchemas } from "./structures/types/schemas";
 
 export class Databases {
-    databases : Array<Database>
+    databases : Array<IDatabase>
 
     constructor () {
-        var databases = new Array<Database>
-        Object.keys(schemas).forEach(key => {
-            switch(schemas[key]["type"]) {
-                case "IndexedDB" : {
-                    databases.push(new EmbeddedDB(schemas[key].parse))
-                }
-                default : {
-                    throw new Error("only IndexedDB has been implemented so far")
-                }
-            }
+        this.databases = Array<IDatabase>()
+    }
+    
+    async loadSchemas(): Promise<any> {
+        var promises : Promise<any>[] = []
+        promises.push(fetch('../../../schemas.json').then(schemasFile => {
+            promises.push(schemasFile.json().then(s => {
+                const schemas : TSchemas = s
+                schemas.schemas.forEach(schema => {
+                    switch(true) {
+                        case /IndexedDB/.test(schema.type) : {
+                            const newIDB = new EmbeddedDB(schema)
+                            console.log(`adding indexeddb`)
+                            console.log(newIDB)
+                            this.databases.push(newIDB)
+                        }
+                    }
+                })
+            }))
+        }))
+        await Promise.all(promises)
+        return new Promise((resolve, reject) => {
+            console.log("returning promise");
+            resolve("promise complete");
+          });
+    }
+
+    getSchemas(source : TSource) : Promise<IDBDatabase[]> {
+        return new Promise(() => {
+            indexedDB.databases
         })
-        this.databases = databases
     }
 }

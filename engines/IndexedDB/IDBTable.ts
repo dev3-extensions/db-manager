@@ -1,19 +1,18 @@
-import { Column } from "../../structures/column"
-import { Table } from "../../structures/table"
+import { IColumn } from "../../structures/interfaces/column"
+import { ITable } from "../../structures/interfaces/table"
+import { TTable } from "../../structures/types/table"
 
-export class IDBTable implements Table {
+export class IDBTable implements ITable {
     name: string
-    columns: Array<Column>
+    columns: Array<IColumn>
     store : IDBObjectStore
     
-    constructor (db : IDBDatabase, name : string, table: JSON) {
-        this.store = db.transaction(db.name).objectStore(this.name)
+    constructor (name: string, table : TTable) {
         this.name = name
-        for(const name in table) {
-            const mods = table[name]
-            this.columns.push(
-                new Column(name, mods)
-            )
+        this.columns = Array<IColumn>()
+
+        for(const col in table) {
+            this.columns.push(new IColumn(col, table[col]))
         }
     }
     add(data: JSON): void {
