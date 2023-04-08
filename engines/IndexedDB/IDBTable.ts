@@ -10,7 +10,7 @@ export class IDBTable implements ITable {
     constructor (name: string, table : TTable) {
         this.name = name
         this.columns = Array<IColumn>()
-
+        console.log(`new table called ${this.name}`)
         for(const col in table) {
             this.columns.push(new IColumn(col, table[col]))
         }

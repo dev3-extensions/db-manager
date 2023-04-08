@@ -11,27 +11,29 @@ export class Databases {
     }
     
     async loadSchemas(): Promise<any> {
-        var promises : Promise<any>[] = []
-        promises.push(fetch('../../../schemas.json').then(schemasFile => {
-            promises.push(schemasFile.json().then(s => {
-                const schemas : TSchemas = s
-                schemas.schemas.forEach(schema => {
-                    switch(true) {
-                        case /IndexedDB/.test(schema.type) : {
-                            const newIDB = new EmbeddedDB(schema)
-                            console.log(`adding indexeddb`)
-                            console.log(newIDB)
-                            this.databases.push(newIDB)
+        return new Promise((resolve) => {
+            fetch('../../../schemas.json').then(schemasFile => {
+                schemasFile.json().then(s => {
+                    const schemas : TSchemas = s
+                    schemas.schemas.forEach(schema => {
+                        switch(true) {
+                            case /IndexedDB/.test(schema.type) : {
+                                const newIDB = new EmbeddedDB(schema)
+                                newIDB.openDB().then((r) => {
+                                    console.log(r)
+                                    console.log(`adding indexeddb`)
+                                    console.log(JSON.stringify(newIDB))
+                                    console.log(newIDB)
+                                    this.databases.push(newIDB)
+                                })
+                            }
                         }
-                    }
+                    })
+                    console.log("returning promise");
+                    resolve("promise complete");
                 })
-            }))
-        }))
-        await Promise.all(promises)
-        return new Promise((resolve, reject) => {
-            console.log("returning promise");
-            resolve("promise complete");
-          });
+            })
+        });
     }
 
     getSchemas(source : TSource) : Promise<IDBDatabase[]> {
