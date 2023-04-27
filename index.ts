@@ -2,43 +2,33 @@ import type { IDatabase } from "./structures/interfaces/database";
 import { EmbeddedDB } from "./engines/IndexedDB/indexedDB";
 import { TSource } from "./structures/types/source";
 import { TSchemas } from "./structures/types/schemas";
+// import { schemas as SchemasFile } from "../database-viewer/schemas.json";
+import { schemas as SchemasFile } from "../../../schemas.json";
 
 export class Databases {
-    databases : Array<IDatabase>
+    databases: Array<IDatabase>;
 
-    constructor () {
-        this.databases = Array<IDatabase>()
-    }
-    
-    async loadSchemas(): Promise<any> {
-        return new Promise((resolve) => {
-            fetch('../../../schemas.json').then(schemasFile => {
-                schemasFile.json().then(s => {
-                    const schemas : TSchemas = s
-                    schemas.schemas.forEach(schema => {
-                        switch(true) {
-                            case /IndexedDB/.test(schema.type) : {
-                                const newIDB = new EmbeddedDB(schema)
-                                newIDB.openDB().then((r) => {
-                                    console.log(r)
-                                    console.log(`adding indexeddb`)
-                                    console.log(JSON.stringify(newIDB))
-                                    console.log(newIDB)
-                                    this.databases.push(newIDB)
-                                })
-                            }
-                        }
-                    })
-                    console.log("returning promise");
-                    resolve("promise complete");
-                })
-            })
-        });
+    constructor() {
+        this.databases = Array<IDatabase>();
     }
 
-    getSchemas(source : TSource) : Promise<IDBDatabase[]> {
+    async loadSchemas() {
+        console.log(`schemas file: ${SchemasFile}`);
+        for (var schema of SchemasFile) {
+            switch (true) {
+                case /IndexedDB/.test(schema.type): {
+                    console.log("indexeddb found");
+                    const newIDB = new EmbeddedDB(schema);
+                    await newIDB.openDB();
+                    this.databases.push(newIDB);
+                }
+            }
+        }
+    }
+
+    getSchemas(source: TSource): Promise<IDBDatabase[]> {
         return new Promise(() => {
-            indexedDB.databases
-        })
+            indexedDB.databases;
+        });
     }
 }

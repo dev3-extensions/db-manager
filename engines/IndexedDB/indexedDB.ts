@@ -1,70 +1,103 @@
-import type { IDatabase } from "../../structures/interfaces/database"
-import { TColumn } from "../../structures/types/column"
-import { TSchema } from "../../structures/types/schema"
-import { IDBTable } from "./IDBTable"
+import type { IDatabase } from "../../structures/interfaces/database";
+import { TColumn } from "../../structures/types/column";
+import { TSchema } from "../../structures/types/schema";
+import { IDBTable } from "./IDBTable";
 
 export class EmbeddedDB implements IDatabase {
-    name : string
-    version : number
-    private schema : TSchema
-    db : IDBDatabase | undefined
-    tables : Array<IDBTable>
-    constructor(schema : TSchema) {
-        this.name = schema.name
-        this.version = schema.version
-        this.schema = schema
-        this.tables = Array<IDBTable>()
+    name: string;
+    version: number;
+    private schema: TSchema;
+    db: IDBDatabase;
+    tables: Array<IDBTable>;
+    constructor(schema: any) {
+        console.log(schema);
+        this.name = schema.name;
+        this.version = schema.version;
+        this.schema = schema;
+        this.tables = Array<IDBTable>();
     }
 
-    async openDB() : Promise<any> {
+    async openDB() {
+        const open_db_req = await indexedDB.open(this.name, this.version);
+        await this.openDBPromise(open_db_req)
+            .then(() => {
+                console.log("promise complete");
+            })
+            .catch(() => {
+                console.log("promise error");
+            });
+        console.log("tables created");
+    }
+
+    async openDBPromise(request): Promise<void> {
         return new Promise((resolve, reject) => {
-            const open_db_req = indexedDB.open(this.name, this.version)
-            open_db_req.onsuccess = (e) => {
-                this.db = open_db_req.result
-                if (this.tables === undefined) {
-                    this.tables = new Array<IDBTable>()
+            console.log("starting listener promise");
+            request.onsuccess = (e) => {
+                console.log("on success");
+                this.db = request.result;
+                if (this.tables.length == 0) {
+                    this.tables = new Array<IDBTable>();
                     for (const i in this.schema.schema) {
-                        this.tables.push(new IDBTable(i, this.schema.schema[i]))
+                        this.tables.push(
+                            new IDBTable(i, this.schema.schema[i])
+                        );
                     }
                 }
-                resolve("IDB open successful")
-            }
+                console.log(this.tables);
+                resolve();
+            };
 
-            open_db_req.onerror = (e) => {
-                console.error("open IDB error: ", e)
-                reject("IDB open error")
-            }
+            request.onerror = (e) => {
+                console.log("on error");
+                console.error("open IDB error: ", e);
+                reject();
+            };
 
-            open_db_req.onupgradeneeded = (e) => {
-                console.log("upgrading database")
-                const db = open_db_req.result
-                this.tables = new Array<IDBTable>()
+            request.onupgradeneeded = (e) => {
+                console.log("upgrading database");
+                const db = request.result;
+                this.tables = new Array<IDBTable>();
                 for (const i in this.schema.schema) {
-                    const newTable = new IDBTable(i, this.schema.schema[i])
+                    const newTable = new IDBTable(i, this.schema.schema[i]);
                     if (db.objectStoreNames.contains(newTable.name)) {
-                        db.deleteObjectStore(newTable.name)
+                        db.deleteObjectStore(newTable.name);
                     }
-                    if (newTable.columns.some(c => c.auto_increment)) {
-                        newTable.store = db.createObjectStore(newTable.name, { autoIncrement: true })
+                    if (newTable.columns.some((c) => c.auto_increment)) {
+                        newTable.store = db.createObjectStore(newTable.name, {
+                            autoIncrement: true,
+                        });
                     } else {
-                        newTable.store = db.createObjectStore(newTable.name)
+                        newTable.store = db.createObjectStore(newTable.name);
                     }
-            
-                    for(const i in newTable.columns) {
-                        const col = newTable.columns[i]
-                        console.log(col)
+
+                    for (const i in newTable.columns) {
+                        const col = newTable.columns[i];
+                        console.log(col);
                         if (col.primary_key) {
-                            newTable.store.createIndex(col.name,"PRIMARY_KEY", { unique: col.unique })
+                            newTable.store.createIndex(
+                                col.name,
+                                "PRIMARY_KEY",
+                                {
+                                    unique: col.unique,
+                                }
+                            );
                         } else if (col.foreign_key != null) {
-                            newTable.store.createIndex(col.name,`FOREIGN_KEY ${col.foreign_key.table}.${col.foreign_key.column}`, { unique: col.unique })
+                            newTable.store.createIndex(
+                                col.name,
+                                `FOREIGN_KEY ${col.foreign_key.table}.${col.foreign_key.column}`,
+                                { unique: col.unique }
+                            );
                         } else {
-                            newTable.store.createIndex(col.name,col.name, { unique: col.unique })
+                            newTable.store.createIndex(col.name, col.name, {
+                                unique: col.unique,
+                            });
                         }
                     }
-                    this.tables.push(newTable)
+                    this.tables.push(newTable);
                 }
-                this.db = db
-            }
-        })
+                this.db = db;
+                resolve();
+            };
+        });
     }
 }
