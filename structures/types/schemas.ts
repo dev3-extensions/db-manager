@@ -1,5 +1,5 @@
-import { TSchema } from "./schema"
+import { TSchema } from "./schema";
 
-export type TSchemas = {
-    schemas : Array<TSchema>
+export class TSchemas {
+    schemas: Array<TSchema>;
 }

@@ -1,4 +1,4 @@
-export type TColumn = {
-    name: string
-    modifiers: string
+export class TColumn {
+    name: string;
+    modifiers: string;
 }

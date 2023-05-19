@@ -1,6 +1,6 @@
-import { TColumn } from "./column"
+import { TColumn } from "./column";
 
-export type TTable = {
-    name : string
-    columns : Array<TColumn>
+export class TTable {
+    name: string;
+    columns: Array<TColumn>;
 }

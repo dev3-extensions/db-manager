@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/dev3-extensions/db-manager/issues"
   },
-  "homepage": "https://github.com/dev3-extensions/db-manager#readme"
+  "homepage": "https://github.com/dev3-extensions/db-manager#readme",
+  "devDependencies": {
+    "@types/node": "^20.2.1"
+  }
 }

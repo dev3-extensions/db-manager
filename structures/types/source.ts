@@ -1,4 +1,4 @@
-export type TSource = {
-    type : string
-    route : string | undefined
+export class TSource {
+    type: string;
+    route: string | undefined;
 }
